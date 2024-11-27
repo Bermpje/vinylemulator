@@ -106,7 +106,20 @@ class SonosController:
                 self.speaker.clear_queue()
             
             if service_type == 'spotify':
-                self.speaker.play_uri(f"spotify:track:{instruction}")
+                # Handle Spotify album/track/playlist URIs
+                if 'album' in instruction:
+                    # Convert album URI to Sonos format and add to queue
+                    spotify_uri = instruction.replace('spotify:album:', 'spotify:album:')
+                    self.speaker.add_uri_to_queue(spotify_uri)
+                    # Play from the beginning of queue
+                    self.speaker.play_from_queue(0)
+                elif 'track' in instruction:
+                    spotify_uri = f"x-sonos-spotify:{instruction}"
+                    self.speaker.play_uri(spotify_uri)
+                else:
+                    spotify_uri = f"x-sonos-spotify:{instruction}"
+                    self.speaker.play_uri(spotify_uri)
+                    
             elif service_type == 'favorite':
                 if instruction:
                     self.speaker.play_favorite(instruction)
@@ -114,8 +127,10 @@ class SonosController:
                 instruction()
             
             return True
+            
         except Exception as e:
             logger.error(f"Error communicating with Sonos: {e}")
+            logger.debug(f"Failed URI: {instruction}")
             return True
 
     def handle_nfc_tag(self, tag: nfc.tag) -> bool:
