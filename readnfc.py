@@ -132,17 +132,8 @@ def main():
     print(f"... and connected to {reader}\n")
 
     print("SONOS API")
-    sonosroom_local = usersettings.sonosroom
-    print(f"API address set to {usersettings.sonoshttpaddress}")
+    sonosroom_local = usersettings.sonosroom    
     print(f"Sonos room set to {sonosroom_local}")
-
-    print("Trying to connect to API ...")
-    try:
-        r = requests.get(usersettings.sonoshttpaddress)
-        if r.status_code == 200:
-            print("... and API responding")
-    except requests.RequestException:
-        print("... but API did not respond. This could be a temporary error so I won't quit")
 
     print("Discovering Sonos speakers...")
     try:
