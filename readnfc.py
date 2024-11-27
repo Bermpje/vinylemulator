@@ -12,10 +12,11 @@ import requests
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Modify SonosController to accept an existing speaker
 class SonosController:
-    def __init__(self, initial_room: str):
+    def __init__(self, initial_room: str, existing_speaker=None):
         self.current_room = initial_room
-        self.speaker = self._get_speaker(initial_room)
+        self.speaker = existing_speaker or self._get_speaker(initial_room)
         self.service_map: Dict[str, str] = {
             'spotify': ('spotify', lambda x: ('spotify', x)),
             'tunein': ('tunein', lambda x: ('tunein', x)),
@@ -110,10 +111,12 @@ class SonosController:
                 return True
         return True
 
-def touched(tag):
-    controller = SonosController(usersettings.sonosroom)
+# Modify the touched function to accept a speaker
+def touched(tag, speaker=None):
+    controller = SonosController(usersettings.sonosroom, speaker)
     return controller.handle_nfc_tag(tag)
 
+# Update main function to pass the speaker
 def main():
     print("\nLoading and checking readnfc")
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
@@ -144,8 +147,14 @@ def main():
         print(f"  - Model: {info['model_name']}")
         print(f"  - Version: {info['software_version']}")
         
-        # Store the successful speaker for later use
-        speakers = [direct_speaker]
+        print("\nOK, all ready! Present an NFC tag.\n")
+        
+        while True:
+            reader.connect(rdwr={
+                'on-connect': lambda tag: touched(tag, direct_speaker), 
+                'beep-on-connect': False
+            })
+            time.sleep(0.1)
         
     except Exception as e:
         print(f"\nError connecting to speaker at 192.168.50.152: {e}")
@@ -153,12 +162,6 @@ def main():
         print(f"  Python version: {sys.version}")
         print(f"  SoCo version: {soco.__version__}")
         sys.exit(1)
-
-    print("\nOK, all ready! Present an NFC tag.\n")
-
-    while True:
-        reader.connect(rdwr={'on-connect': touched, 'beep-on-connect': False})
-        time.sleep(0.1)
 
 if __name__ == "__main__":
     main()
