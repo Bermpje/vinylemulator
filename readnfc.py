@@ -137,22 +137,28 @@ def main():
 
     print("Discovering Sonos speakers...")
     try:
-        speakers = list(soco.discover())
-        if speakers is None:
-            print("Initial discovery failed")
-        elif speakers:
-            print("Found the following Sonos rooms:")
-            for speaker in speakers:
-                print(f"  - {speaker.player_name}")
-            print(f"\nCurrently set to use: {usersettings.sonosroom}")
-        else:
-            print("No Sonos speakers found on the network!")
-            print("Please check your network connection and that your Sonos system is powered on.")
-            sys.exit()
+        speakers = soco.discover()
+        if not speakers:
+            print("\nERROR: Unable to discover any Sonos system")
+            print("Please check:")
+            print("  1. Your network connection")
+            print("  2. That your Sonos system is powered on")
+            print("  3. That you're on the same network as your Sonos")
+            sys.exit(1)  # Exit with error code
+            
+        # Convert to list after we know speakers is not None
+        speaker_list = list(speakers)
+        print("Found the following Sonos rooms:")
+        for speaker in speaker_list:
+            print(f"  - {speaker.player_name}")
+        print(f"\nCurrently set to use: {usersettings.sonosroom}")
+        
     except Exception as e:
-        print(f"Error discovering Sonos system: {e}")
-        print("Please check your network connection and that your Sonos system is powered on.")
-        sys.exit()
+        print(f"\nError discovering Sonos system: {e}")
+        print("Debug info:")
+        print(f"  Python version: {sys.version}")
+        print(f"  SoCo version: {soco.__version__}")
+        sys.exit(1)  # Exit with error code
 
     print("\nOK, all ready! Present an NFC tag.\n")
 
