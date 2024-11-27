@@ -8,6 +8,7 @@ from soco.discovery import by_name
 import appsettings
 import usersettings
 import requests
+import signal
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -154,6 +155,13 @@ def main():
     sonosroom_local = usersettings.sonosroom    
     print(f"Sonos room set to {sonosroom_local}")
 
+    def signal_handler(signum, frame):
+        print("\nShutting down gracefully...")
+        reader.close()
+        sys.exit(0)
+        
+    signal.signal(signal.SIGINT, signal_handler)
+    
     print("Attempting direct connection to Sonos speaker...")
     try:
         direct_speaker = soco.SoCo('192.168.50.152')
@@ -163,7 +171,8 @@ def main():
         print(f"  - Model: {info['model_name']}")
         print(f"  - Version: {info['software_version']}")
         
-        print("\nOK, all ready! Present an NFC tag.\n")
+        print("\nOK, all ready! Present an NFC tag.")
+        print("Press Ctrl+C to exit.\n")
         
         while True:
             reader.connect(rdwr={
@@ -171,14 +180,18 @@ def main():
                 'beep-on-connect': False
             })
             time.sleep(0.1)
+            
     except KeyboardInterrupt:
-        print("Loop stopped by user.")
+        print("\nShutting down gracefully...")
+        reader.close()
+        sys.exit(0)
         
     except Exception as e:
         print(f"\nError connecting to speaker at 192.168.50.152: {e}")
         print("Debug info:")
         print(f"  Python version: {sys.version}")
         print(f"  SoCo version: {soco.__version__}")
+        reader.close()
         sys.exit(1)
 
 if __name__ == "__main__":
