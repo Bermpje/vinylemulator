@@ -144,6 +144,23 @@ def main():
     except requests.RequestException:
         print("... but API did not respond. This could be a temporary error so I won't quit")
 
+    print("Discovering Sonos speakers...")
+    try:
+        speakers = list(soco.discover())
+        if speakers:
+            print("Found the following Sonos rooms:")
+            for speaker in speakers:
+                print(f"  - {speaker.player_name}")
+            print(f"\nCurrently set to use: {usersettings.sonosroom}")
+        else:
+            print("No Sonos speakers found on the network!")
+            print("Please check your network connection and that your Sonos system is powered on.")
+            sys.exit()
+    except Exception as e:
+        print(f"Error discovering Sonos system: {e}")
+        print("Please check your network connection and that your Sonos system is powered on.")
+        sys.exit()
+
     print("\nOK, all ready! Present an NFC tag.\n")
 
     while True:
