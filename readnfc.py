@@ -138,7 +138,9 @@ def main():
     print("Discovering Sonos speakers...")
     try:
         speakers = list(soco.discover())
-        if speakers:
+        if speakers is None:
+            print("Initial discovery failed")
+        elif speakers:
             print("Found the following Sonos rooms:")
             for speaker in speakers:
                 print(f"  - {speaker.player_name}")
