@@ -58,6 +58,22 @@ class SonosController:
         }
         return ('command', commands.get(command.lower(), lambda: None))
 
+    def _parse_service_type(self, text: str, text_lower: str) -> tuple[Optional[str], Optional[str]]:
+        # Handle Spotify URLs first
+        if text_lower.startswith('spotify:'):
+            return 'spotify', text
+
+        # Handle other service types
+        for prefix, (service_type, transform_func) in self.service_map.items():
+            if text_lower.startswith(prefix):
+                try:
+                    return transform_func(text)
+                except Exception as e:
+                    logger.error(f"Error transforming {service_type} instruction: {e}")
+                    return None, None
+                    
+        return None, None
+
     def _process_nfc_record(self, record) -> bool:
         try:
             received_text = record.text
