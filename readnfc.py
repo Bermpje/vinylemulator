@@ -13,6 +13,8 @@ import signal
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+running = True
+
 # Modify SonosController to accept an existing speaker
 class SonosController:
     def __init__(self, initial_room: str, existing_speaker=None):
@@ -156,9 +158,9 @@ def main():
     print(f"Sonos room set to {sonosroom_local}")
 
     def signal_handler(signum, frame):
+        global running
         print("\nShutting down gracefully...")
-        reader.close()
-        sys.exit(0)
+        running = False
         
     signal.signal(signal.SIGINT, signal_handler)
     
@@ -174,23 +176,22 @@ def main():
         print("\nOK, all ready! Present an NFC tag.")
         print("Press Ctrl+C to exit.\n")
         
-        while True:
-            reader.connect(rdwr={
-                'on-connect': lambda tag: touched(tag, direct_speaker), 
-                'beep-on-connect': False
-            })
-            time.sleep(0.1)
-            
-    except KeyboardInterrupt:
-        print("\nShutting down gracefully...")
+        global running
+        while running:
+            try:
+                reader.connect(rdwr={
+                    'on-connect': lambda tag: touched(tag, direct_speaker), 
+                    'beep-on-connect': False
+                })
+                time.sleep(0.1)
+            except KeyboardInterrupt:
+                break
+                
         reader.close()
         sys.exit(0)
-        
+            
     except Exception as e:
         print(f"\nError connecting to speaker at 192.168.50.152: {e}")
-        print("Debug info:")
-        print(f"  Python version: {sys.version}")
-        print(f"  SoCo version: {soco.__version__}")
         reader.close()
         sys.exit(1)
 
