@@ -7,9 +7,6 @@ sonoshttpaddress="http://localhost:5005"
 #set the name of the Sonos room you want to play the music in
 sonosroom="Garden"
 
-#send anonymous usage statistics
-sendanonymoususagestatistics="yes"
-
 #if you are getting erros saying your nfc reader can not be found do the following:
 #type lsusb into a terminal on your raspberry pi and enter
 #in the output, find your nfc reader and copy the hex code next to it
