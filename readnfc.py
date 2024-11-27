@@ -171,6 +171,8 @@ def main():
                 'beep-on-connect': False
             })
             time.sleep(0.1)
+    except KeyboardInterrupt:
+        print("Loop stopped by user.")
         
     except Exception as e:
         print(f"\nError connecting to speaker at 192.168.50.152: {e}")
