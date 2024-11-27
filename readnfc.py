@@ -131,34 +131,28 @@ def main():
 
     print(f"... and connected to {reader}\n")
 
-    print("SONOS API")
+    print("SONOS Setup")
     sonosroom_local = usersettings.sonosroom    
     print(f"Sonos room set to {sonosroom_local}")
 
-    print("Discovering Sonos speakers...")
+    print("Attempting direct connection to Sonos speaker...")
     try:
-        speakers = soco.discover()
-        if not speakers:
-            print("\nERROR: Unable to discover any Sonos system")
-            print("Please check:")
-            print("  1. Your network connection")
-            print("  2. That your Sonos system is powered on")
-            print("  3. That you're on the same network as your Sonos")
-            sys.exit(1)  # Exit with error code
-            
-        # Convert to list after we know speakers is not None
-        speaker_list = list(speakers)
-        print("Found the following Sonos rooms:")
-        for speaker in speaker_list:
-            print(f"  - {speaker.player_name}")
-        print(f"\nCurrently set to use: {usersettings.sonosroom}")
+        direct_speaker = soco.SoCo('192.168.50.152')
+        info = direct_speaker.get_speaker_info()
+        print(f"\nSuccessfully connected to speaker:")
+        print(f"  - Name: {direct_speaker.player_name}")
+        print(f"  - Model: {info['model_name']}")
+        print(f"  - Version: {info['software_version']}")
+        
+        # Store the successful speaker for later use
+        speakers = [direct_speaker]
         
     except Exception as e:
-        print(f"\nError discovering Sonos system: {e}")
+        print(f"\nError connecting to speaker at 192.168.50.152: {e}")
         print("Debug info:")
         print(f"  Python version: {sys.version}")
         print(f"  SoCo version: {soco.__version__}")
-        sys.exit(1)  # Exit with error code
+        sys.exit(1)
 
     print("\nOK, all ready! Present an NFC tag.\n")
 
