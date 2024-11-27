@@ -7,6 +7,7 @@ import soco
 from soco.discovery import by_name
 import appsettings
 import usersettings
+import requests
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
