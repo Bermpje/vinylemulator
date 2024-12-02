@@ -105,18 +105,6 @@ def touched(tag):
             
             print ("Sonos API reports " + r.json()['status'])
 
-            #put together log data and send (if given permission)
-            if usersettings.sendanonymoususagestatistics == "yes":
-                logdata = {
-                'time': time.time(),
-                'value1': appsettings.appversion,
-                'value2': hex(uuid.getnode()),
-                'actiontype': 'nfcread',
-                'value3': receivedtext,
-                'servicetype': servicetype,
-                'urltoget': urltoget
-                }
-
     else:
         print("")
         print ("NFC reader could not read tag. This can be because the reader didn't get a clear read of the card. If the issue persists then this is usually because (a) the tag is encoded (b) you are trying to use a mifare classic card, which is not supported or (c) you have tried to add data to the card which is not in text format. Please check the data on the card using NFC Tools on Windows or Mac.")
