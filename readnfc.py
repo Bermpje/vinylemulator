@@ -73,8 +73,6 @@ def touched(tag):
             #if no service or command detected, exit
             if servicetype == "":
                 print ("Service type not recognised. NFC tag text should begin spotify, tunein, amazonmusic, apple/applemusic, command or room.")
-                if usersettings.sendanonymoususagestatistics == "yes":
-                    r = requests.post(appsettings.usagestatsurl, data = {'time': time.time(), 'value1': appsettings.appversion, 'value2': hex(uuid.getnode()), 'value3': 'invalid service type sent'})
                 return True
             
             print ("Detected " + servicetype + " service request")
@@ -118,13 +116,10 @@ def touched(tag):
                 'servicetype': servicetype,
                 'urltoget': urltoget
                 }
-                r = requests.post(appsettings.usagestatsurl, data = logdata)
 
     else:
         print("")
         print ("NFC reader could not read tag. This can be because the reader didn't get a clear read of the card. If the issue persists then this is usually because (a) the tag is encoded (b) you are trying to use a mifare classic card, which is not supported or (c) you have tried to add data to the card which is not in text format. Please check the data on the card using NFC Tools on Windows or Mac.")
-        if usersettings.sendanonymoususagestatistics == "yes":
-            r = requests.post(appsettings.usagestatsurl, data = {'time': time.time(), 'value1': appsettings.appversion, 'value2': hex(uuid.getnode()), 'value3': 'nfcreaderror'})
 
     return True
 
@@ -178,9 +173,6 @@ if r.status_code == 200:
 print("")
 print("OK, all ready! Present an NFC tag.")
 print("")
-
-if usersettings.sendanonymoususagestatistics == "yes":
-    r = requests.post(appsettings.usagestatsurl, data = {'time': time.time(), 'value1': appsettings.appversion, 'value2': hex(uuid.getnode()), 'value3': 'appstart'})
 
 while True:
     reader.connect(rdwr={'on-connect': touched, 'beep-on-connect': False})
