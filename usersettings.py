@@ -14,4 +14,4 @@ sonosroom="Living Room"
 #then replace "usb" with "usb:072f:2200"
 #(or whatever lsusb outputted for your nfc reader)
 # nfc_reader_path="usb"
-nfc_reader_path="tty:pn532:/dev/serial0"
+nfc_reader_path="tty:AMA0:pn532"
